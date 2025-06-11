@@ -8,6 +8,10 @@ import AccessDenied from './pages/AccessDenied'
 import TasksPage from './pages/taskPage'
 import CreateTaskPage from './pages/CreateTaskPage'
 import EditTaskPage from './pages/EditTaskPage'
+import ProjectsPage from './pages/projects/ProjectPage'
+import CreateProjectPage from './pages/projects/CreateProject'
+import EditProjectPage from './pages/projects/EditProjectPage'
+import ProjectDetailsPage from './pages/projects/projectDetailsPage'
 
 function App() {
 
@@ -22,6 +26,10 @@ function App() {
         <Route path='/edit/:id' element={<EditTaskPage />} />
         <Route path='/create-task' element={<CreateTaskPage />} />
         <Route path='edit-task/:taskId' element={<EditTaskPage />} />
+        <Route path='/projects' element={<ProjectsPage />} />
+        <Route path='/create-project' element={<CreateProjectPage />} />
+        <Route path='/edit-project/:projectId' element={<EditProjectPage />} />
+        <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
 
         <Route path='/denied' element={<AccessDenied />} />
         <Route path='*' element={<NotFound />} />
