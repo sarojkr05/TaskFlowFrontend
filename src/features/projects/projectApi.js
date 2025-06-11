@@ -52,6 +52,51 @@ export const projectApi = createApi({
       }),
       invalidatesTags: ["Project"],
     }),
+    // Tasks within Projects 
+    getTasksByProjectId: builder.query({
+      query: (projectId) => `/projects/${projectId}/tasks`,
+      providesTags: (result, error, projectId) => [{ type: "Project", id: projectId }, "Task"],
+      tagTypes: ["Project", "Task"]
+    }),
+    updateTaskInProject: builder.mutation({
+      query: ({ taskId, updatedData }) => ({
+        url: `/projects/tasks/${taskId}`,
+        method: "PUT",
+        body: updatedData,
+      }),
+      invalidatesTags: ["Task"],
+      providesTags: (result, error, projectId) => [{ type: "Project", id: projectId }, "Task"],
+      tagTypes: ["Project", "Task"]
+    }),
+    createTaskInProject: builder.mutation({
+      query: ({ projectId, title, description }) => ({
+        url: `/projects/${projectId}/tasks`,
+        method: "POST",
+        body: { title, description },
+      }),
+      invalidatesTags: ["Task"],
+      providesTags: (result, error, projectId) => [{ type: "Project", id: projectId }, "Task"],
+      tagTypes: ["Project", "Task"]
+  }),
+  deleteTaskInProject: builder.mutation({
+      query: ({ projectId, taskId }) => ({
+        url: `/projects/${projectId}/tasks/${taskId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Task"],
+      providesTags: (result, error, projectId) => [{ type: "Project", id: projectId }, "Task"],
+      tagTypes: ["Project", "Task"]
+    }),
+    updateTaskStatusInProject: builder.mutation({
+      query: ({ taskId, updatedData }) => ({
+        url: `/projects/tasks/${taskId}`,
+        method: "PUT",
+        body: { status: updatedData.status },
+      }),
+      invalidatesTags: ["Task"],
+      providesTags: (result, error, projectId) => [{ type: "Project", id: projectId }, "Task"],
+      tagTypes: ["Project", "Task"]
+    }),
   }),
 });
 
@@ -61,4 +106,9 @@ export const {
   useCreateProjectMutation,
   useUpdateProjectMutation,
   useDeleteProjectMutation,
+  useGetTasksByProjectIdQuery,
+  useUpdateTaskInProjectMutation,
+  useCreateTaskInProjectMutation,
+  useDeleteTaskInProjectMutation,
+  useUpdateTaskStatusInProjectMutation,
 } = projectApi;

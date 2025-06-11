@@ -3,36 +3,40 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
 import Layout from "../../layout/Layout";
-import { useDeleteProjectMutation, useGetProjectByIdQuery, useUpdateProjectMutation } from "../../features/projects/projectApi";
+import { Link } from "react-router-dom";
+import {
+  useDeleteProjectMutation,
+  useGetProjectByIdQuery,
+  useUpdateProjectMutation,
+  useGetTasksByProjectIdQuery,
+  useDeleteTaskInProjectMutation,
+} from "../../features/projects/projectApi";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 
 function ProjectDetailsPage() {
   const { projectId } = useParams();
   const { data, isLoading, error } = useGetProjectByIdQuery(projectId);
+  const {
+    data: taskData,
+    isLoading: isTaskLoading,
+    error: taskError,
+  } = useGetTasksByProjectIdQuery(projectId);
   const [updateProject, { isLoading: isUpdating }] = useUpdateProjectMutation();
+  const [deleteProject, { isLoading: isDeleting }] = useDeleteProjectMutation();
+  const navigate = useNavigate();
 
   const project = data?.project;
-
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState(project?.name || "");
   const [description, setDescription] = useState(project?.description || "");
-  const navigate = useNavigate();
-  const [deleteProject, { isLoading: isDeleting  }] = useDeleteProjectMutation();
-
-  const handleDelete = async () => {
-    const confimed = window.confirm("Are you sure you want to delete this project?");
-    if (!confimed) return;
-    try {
-      await deleteProject(projectId).unwrap();
-      toast.success("Project deleted successfully!");
-      navigate("/projects");
-    } catch (err) {
-      toast.error(err?.data?.message || "Failed to delete project");
-    }
-  }
+  const [deleteTaskInProject] = useDeleteTaskInProjectMutation();
 
   const handleUpdate = async () => {
     try {
-      await updateProject({ projectId, updatedData: { name, description } }).unwrap();
+      await updateProject({
+        projectId,
+        updatedData: { name, description },
+      }).unwrap();
       toast.success("Project updated successfully!");
       setEditMode(false);
     } catch (err) {
@@ -40,10 +44,40 @@ function ProjectDetailsPage() {
     }
   };
 
+  const handleDelete = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this project?"
+    );
+    if (!confirmed) return;
+    try {
+      await deleteProject(projectId).unwrap();
+      toast.success("Project deleted successfully!");
+      navigate("/projects");
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to delete project");
+    }
+  };
+
+  const handleDeleteTask = async (taskId) => {
+  const confirmed = window.confirm("Delete this task?");
+  if (!confirmed) return;
+  try {
+    // Assuming you already have a deleteTask mutation
+    await deleteTaskInProject({ projectId, taskId }).unwrap();
+    toast.success("Task deleted!");
+  } catch (err) {
+    toast.error(err?.data?.message || "Failed to delete task");
+  }
+};
+
+
   if (isLoading) {
     return (
       <Layout>
-        <div className="p-4">Loading project...</div>
+        <div className="flex items-center gap-2 p-4 text-gray-600">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          Loading project...
+        </div>
       </Layout>
     );
   }
@@ -58,63 +92,130 @@ function ProjectDetailsPage() {
 
   return (
     <Layout>
-      <div className="container mx-auto p-4">
-        {editMode ? (
-          <div className="space-y-3">
-            <input
-              className="w-full border p-2 rounded text-xl font-bold"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <textarea
-              className="w-full border p-2 rounded"
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <div className="space-x-3">
-              <button
-                onClick={handleUpdate}
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                disabled={isUpdating}
-              >
-                {isUpdating ? "Updating..." : "Save Changes"}
-              </button>
-              <button
-                onClick={() => setEditMode(false)}
-                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
-              >
-                Cancel
-              </button>
+      <div className="container mx-auto px-4 py-6">
+        {/* Project Info */}
+        <div className="bg-white shadow-md rounded-lg p-6 mb-6 border">
+          {editMode ? (
+            <div className="space-y-4">
+              <input
+                className="w-full border p-3 rounded text-xl font-semibold"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Project name"
+              />
+              <textarea
+                className="w-full border p-3 rounded"
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Project description"
+              />
+              <div className="flex gap-3">
+                <button
+                  onClick={handleUpdate}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow"
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? "Saving..." : "Save Changes"}
+                </button>
+                <button
+                  onClick={() => setEditMode(false)}
+                  className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <>
-            <h1 className="text-3xl font-bold mb-2">{project.name}</h1>
-            <p className="text-gray-700 mb-4">{project.description}</p>
-            <button
-              onClick={() => {
-                setName(project.name);
-                setDescription(project.description);
-                setEditMode(true);
-              }}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Edit Project
-            </button>
-            <button
-                onClick={handleDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                disabled={isDeleting}
-              >
-                {isDeleting ? "Deleting..." : "Delete Project"}
-              </button>
-          </>
-        )}
+          ) : (
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                {project.name}
+              </h1>
+              <p className="text-gray-600 mb-4">{project.description}</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setName(project.name);
+                    setDescription(project.description);
+                    setEditMode(true);
+                  }}
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
+                >
+                  <Pencil className="w-4 h-4" />
+                  Edit
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded shadow"
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {isDeleting ? "Deleting..." : "Delete"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
-        <div className="mt-6">
-          <p className="font-semibold">Tasks will be listed here...</p>
-          {/* You can show tasks under this project later here */}
+        {/* Task List */}
+        <div className="bg-white shadow-md rounded-lg p-6 border">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800">Tasks</h2>
+
+          <div className="flex justify-end mb-4">
+            <Link
+              to={`/projects/${projectId}/create-task`}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
+            >
+              + Create Task
+            </Link>
+          </div>
+
+          {isTaskLoading && (
+            <div className="flex items-center gap-2 text-gray-600">
+              <Loader2 className="animate-spin w-5 h-5" />
+              Loading tasks...
+            </div>
+          )}
+
+          {taskError && <p className="text-red-500">Failed to load tasks</p>}
+
+          {taskData?.tasks?.length > 0 ? (
+            <ul className="space-y-4">
+              {taskData.tasks.map((task) => (
+                <li
+                  key={task._id}
+                  className="p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition"
+                >
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {task.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {task.description}
+                  </p>
+                  <div className="flex gap-2 mt-2">
+                    <Link
+                      to={`/projects/${projectId}/edit-task/${task._id}`}
+                      className="bg-blue-500 text-white px-3 py-1 rounded"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDeleteTask(task._id)}
+                      className="bg-red-600 text-white px-3 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            !isTaskLoading && (
+              <p className="text-gray-500 italic">
+                No tasks found for this project.
+              </p>
+            )
+          )}
         </div>
       </div>
     </Layout>

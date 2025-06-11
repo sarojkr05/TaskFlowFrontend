@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import Layout from "../layout/Layout";
 import useTaskContainer from "../pages/taskContainer";
 import { useRef, useEffect } from "react";
+import { useUpdateTaskStatusMutation } from "../features/tasks/taskApi";
+import { toast } from "sonner";
 
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -32,14 +34,16 @@ const TasksPage = () => {
     handleClose,
   } = useTaskContainer();
 
+  const [updateTaskStatus] = useUpdateTaskStatusMutation();
+
   const detailRef = useRef(null);
 
   useEffect(() => {
     if (selectedTask && window.innerWidth < 768 && detailRef.current) {
       detailRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     } else if (selectedTask && detailRef.current) {
-    detailRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+      detailRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }, [selectedTask]);
 
   return (
@@ -92,7 +96,7 @@ const TasksPage = () => {
                     : ""
                 }`}
               >
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start flex-col sm:flex-row sm:items-center">
                   <div
                     className="flex-1 cursor-pointer"
                     onClick={() => dispatch(setSelectedTask(task))}
@@ -117,18 +121,37 @@ const TasksPage = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="space-x-2">
+
+                  <div className="flex gap-3 items-center mt-3 sm:mt-0">
+                    {task.status !== "completed" && (
+                      <button
+                        onClick={() =>
+                          updateTaskStatus({
+                            taskId: task._id,
+                            updatedData: { status: "completed" },
+                          })
+                            .unwrap()
+                            .then(() =>
+                              toast.success("Task marked as completed")
+                            )
+                            .catch(() => toast.error("Failed to update task"))
+                        }
+                        className="text-green-600 hover:underline text-sm"
+                      >
+                        ✅ Mark as Completed
+                      </button>
+                    )}
                     <Link
                       to={`/edit-task/${task._id}`}
-                      className="text-blue-600 hover:underline"
+                      className="text-blue-600 hover:underline text-sm"
                     >
-                      Edit
+                      ✏️ Edit
                     </Link>
                     <button
                       onClick={() => handleDelete(task._id)}
-                      className="text-red-600 hover:underline cursor-pointer"
+                      className="text-red-600 hover:underline text-sm"
                     >
-                      Delete
+                      🗑️ Delete
                     </button>
                   </div>
                 </div>
