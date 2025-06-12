@@ -27,7 +27,7 @@ function EditProjectTaskPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateTask({ taskId, updatedData: task }).unwrap();
+      await updateTask({ projectId, taskId, updatedData: task }).unwrap();
       toast.success("Task updated!");
       navigate(`/projects/${projectId}`);
     } catch (err) {

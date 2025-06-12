@@ -59,8 +59,8 @@ export const projectApi = createApi({
       tagTypes: ["Project", "Task"]
     }),
     updateTaskInProject: builder.mutation({
-      query: ({ taskId, updatedData }) => ({
-        url: `/projects/tasks/${taskId}`,
+      query: ({ taskId, projectId, updatedData }) => ({
+        url: `/projects/${projectId}/tasks/${taskId}`,
         method: "PUT",
         body: updatedData,
       }),
