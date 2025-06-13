@@ -1,4 +1,3 @@
-// features/project/projectApi.js
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const projectApi = createApi({
@@ -18,7 +17,9 @@ export const projectApi = createApi({
     // ✅ Get a single project by ID
     getProjectById: builder.query({
       query: (projectId) => `/projects/${projectId}`,
-      providesTags: (result, error, projectId) => [{ type: "Project", id: projectId }],
+      providesTags: (result, error, projectId) => [
+        { type: "Project", id: projectId },
+      ],
     }),
 
     // ✅ Create a new project
@@ -52,11 +53,14 @@ export const projectApi = createApi({
       }),
       invalidatesTags: ["Project"],
     }),
-    // Tasks within Projects 
+    // Tasks within Projects
     getTasksByProjectId: builder.query({
       query: (projectId) => `/projects/${projectId}/tasks`,
-      providesTags: (result, error, projectId) => [{ type: "Project", id: projectId }, "Task"],
-      tagTypes: ["Project", "Task"]
+      providesTags: (result, error, projectId) => [
+        { type: "Project", id: projectId },
+        "Task",
+      ],
+      tagTypes: ["Project", "Task"],
     }),
     updateTaskInProject: builder.mutation({
       query: ({ taskId, projectId, updatedData }) => ({
@@ -65,8 +69,11 @@ export const projectApi = createApi({
         body: updatedData,
       }),
       invalidatesTags: ["Task"],
-      providesTags: (result, error, projectId) => [{ type: "Project", id: projectId }, "Task"],
-      tagTypes: ["Project", "Task"]
+      providesTags: (result, error, projectId) => [
+        { type: "Project", id: projectId },
+        "Task",
+      ],
+      tagTypes: ["Project", "Task"],
     }),
     createTaskInProject: builder.mutation({
       query: ({ projectId, title, description }) => ({
@@ -75,17 +82,23 @@ export const projectApi = createApi({
         body: { title, description },
       }),
       invalidatesTags: ["Task"],
-      providesTags: (result, error, projectId) => [{ type: "Project", id: projectId }, "Task"],
-      tagTypes: ["Project", "Task"]
-  }),
-  deleteTaskInProject: builder.mutation({
+      providesTags: (result, error, projectId) => [
+        { type: "Project", id: projectId },
+        "Task",
+      ],
+      tagTypes: ["Project", "Task"],
+    }),
+    deleteTaskInProject: builder.mutation({
       query: ({ projectId, taskId }) => ({
         url: `/projects/${projectId}/tasks/${taskId}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Task"],
-      providesTags: (result, error, projectId) => [{ type: "Project", id: projectId }, "Task"],
-      tagTypes: ["Project", "Task"]
+      providesTags: (result, error, projectId) => [
+        { type: "Project", id: projectId },
+        "Task",
+      ],
+      tagTypes: ["Project", "Task"],
     }),
     updateTaskStatusInProject: builder.mutation({
       query: ({ taskId, updatedData }) => ({
@@ -94,8 +107,38 @@ export const projectApi = createApi({
         body: { status: updatedData.status },
       }),
       invalidatesTags: ["Task"],
-      providesTags: (result, error, projectId) => [{ type: "Project", id: projectId }, "Task"],
-      tagTypes: ["Project", "Task"]
+      providesTags: (result, error, projectId) => [
+        { type: "Project", id: projectId },
+        "Task",
+      ],
+      tagTypes: ["Project", "Task"],
+    }),
+    getProjectMembers: builder.query({
+      query: (projectId) => `/projects/${projectId}/members`,
+      providesTags: (result, error, projectId) => [
+        { type: "Project", id: projectId },
+      ],
+    }),
+    addProjectMember: builder.mutation({
+      query: ({ projectId, email }) => ({
+        url: `/projects/${projectId}/members`,
+        method: "POST",
+        body: { email },
+      }),
+      invalidatesTags: (result, error, { projectId }) => [
+        { type: "Project", id: projectId },
+        "Project",
+      ],
+    }),
+    removeProjectMember: builder.mutation({
+      query: ({ projectId, userId }) => ({
+        url: `/projects/${projectId}/remove-user/${userId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, { projectId }) => [
+        { type: "Project", id: projectId },
+        "Project",
+      ],
     }),
   }),
 });
@@ -111,4 +154,7 @@ export const {
   useCreateTaskInProjectMutation,
   useDeleteTaskInProjectMutation,
   useUpdateTaskStatusInProjectMutation,
+  useGetProjectMembersQuery,
+  useAddProjectMemberMutation,
+  useRemoveProjectMemberMutation
 } = projectApi;

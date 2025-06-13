@@ -59,17 +59,16 @@ function ProjectDetailsPage() {
   };
 
   const handleDeleteTask = async (taskId) => {
-  const confirmed = window.confirm("Delete this task?");
-  if (!confirmed) return;
-  try {
-    // Assuming you already have a deleteTask mutation
-    await deleteTaskInProject({ projectId, taskId }).unwrap();
-    toast.success("Task deleted!");
-  } catch (err) {
-    toast.error(err?.data?.message || "Failed to delete task");
-  }
-};
-
+    const confirmed = window.confirm("Delete this task?");
+    if (!confirmed) return;
+    try {
+      // Assuming you already have a deleteTask mutation
+      await deleteTaskInProject({ projectId, taskId }).unwrap();
+      toast.success("Task deleted!");
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to delete task");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -152,6 +151,12 @@ function ProjectDetailsPage() {
                   <Trash2 className="w-4 h-4" />
                   {isDeleting ? "Deleting..." : "Delete"}
                 </button>
+                <Link
+                  to={`/projects/${projectId}/manage-members`}
+                  className="text-blue-600 hover:underline"
+                >
+                  Manage Members
+                </Link>
               </div>
             </div>
           )}
@@ -159,28 +164,28 @@ function ProjectDetailsPage() {
 
         {/* Task List */}
         <div className="bg-white shadow-md rounded-lg p-6 border">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800">Tasks</h2>
-
-          <div className="flex justify-end mb-4">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-semibold text-gray-800">Tasks</h2>
             <Link
               to={`/projects/${projectId}/create-task`}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow"
             >
               + Create Task
             </Link>
           </div>
 
           {isTaskLoading && (
-            <div className="flex items-center gap-2 text-gray-600">
-              <Loader2 className="animate-spin w-5 h-5" />
+            <div className="flex items-center gap-2 text-gray-600 mb-4">
+              <Loader2 className="w-5 h-5 animate-spin" />
               Loading tasks...
             </div>
           )}
-
-          {taskError && <p className="text-red-500">Failed to load tasks</p>}
+          {taskError && (
+            <p className="text-red-500 mb-4">Failed to load tasks</p>
+          )}
 
           {taskData?.tasks?.length > 0 ? (
-            <ul className="space-y-4">
+            <ul className="grid md:grid-cols-2 gap-4">
               {taskData.tasks.map((task) => (
                 <li
                   key={task._id}
@@ -192,16 +197,21 @@ function ProjectDetailsPage() {
                   <p className="text-sm text-gray-600 mt-1">
                     {task.description}
                   </p>
-                  <div className="flex gap-2 mt-2">
+                  {task.assignedTo && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      Assigned to: {task.assignedTo?.email || "User"}
+                    </p>
+                  )}
+                  <div className="flex gap-2 mt-3">
                     <Link
                       to={`/projects/${projectId}/edit-task/${task._id}`}
-                      className="bg-blue-500 text-white px-3 py-1 rounded"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
                     >
                       Edit
                     </Link>
                     <button
                       onClick={() => handleDeleteTask(task._id)}
-                      className="bg-red-600 text-white px-3 py-1 rounded"
+                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
                     >
                       Delete
                     </button>

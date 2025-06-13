@@ -14,6 +14,7 @@ import EditProjectPage from './pages/projects/EditProjectPage'
 import ProjectDetailsPage from './pages/projects/projectDetailsPage'
 import CreateProjectTaskPage from './pages/projects/CreateProjectTaskPage'
 import EditProjectTaskPage from './pages/projects/EditProjectTask'
+import ManageProjectMembersPage from './pages/projects/ManageProjeceMembersPage'
 
 function App() {
 
@@ -34,6 +35,7 @@ function App() {
         <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
         <Route path='/projects/:projectId/create-task' element={<CreateProjectTaskPage />} />
         <Route path='/projects/:projectId/edit-task/:taskId' element={<EditProjectTaskPage />} />
+        <Route path="/projects/:projectId/manage-members" element={<ManageProjectMembersPage />} />
 
         {/* Error Routes */}
 
