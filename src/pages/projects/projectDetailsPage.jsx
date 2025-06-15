@@ -1,80 +1,28 @@
 // src/pages/ProjectDetailsPage.jsx
-import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
-import { toast } from "sonner";
 import Layout from "../../layout/Layout";
 import { Link } from "react-router-dom";
-import {
-  useDeleteProjectMutation,
-  useGetProjectByIdQuery,
-  useUpdateProjectMutation,
-  useGetTasksByProjectIdQuery,
-  useDeleteTaskInProjectMutation,
-  useGetProjectMembersQuery,
-} from "../../features/projects/projectApi";
 import { Loader2, Pencil, Trash2 } from "lucide-react";
-import { useSelector } from "react-redux";
 
-function ProjectDetailsPage() {
-  const { projectId } = useParams();
-  const { data, isLoading, error } = useGetProjectByIdQuery(projectId);
-  const {
-    data: taskData,
-    isLoading: isTaskLoading,
-    error: taskError,
-  } = useGetTasksByProjectIdQuery(projectId);
-  const [updateProject, { isLoading: isUpdating }] = useUpdateProjectMutation();
-  const [deleteProject, { isLoading: isDeleting }] = useDeleteProjectMutation();
-  const navigate = useNavigate();
-
-  const project = data?.project;
-  const [editMode, setEditMode] = useState(false);
-  const [name, setName] = useState(project?.name || "");
-  const [description, setDescription] = useState(project?.description || "");
-  const [deleteTaskInProject] = useDeleteTaskInProjectMutation();
-  const { data: memberData, isLoading: loadingMembers } =
-    useGetProjectMembersQuery(projectId);
-  const currentUserId = useSelector((state) => state.auth.user?._id);
-
-  const handleUpdate = async () => {
-    try {
-      await updateProject({
-        projectId,
-        updatedData: { name, description },
-      }).unwrap();
-      toast.success("Project updated successfully!");
-      setEditMode(false);
-    } catch (err) {
-      toast.error(err?.data?.message || "Failed to update project");
-    }
-  };
-
-  const handleDelete = async () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this project?"
-    );
-    if (!confirmed) return;
-    try {
-      await deleteProject(projectId).unwrap();
-      toast.success("Project deleted successfully!");
-      navigate("/projects");
-    } catch (err) {
-      toast.error(err?.data?.message || "Failed to delete project");
-    }
-  };
-
-  const handleDeleteTask = async (taskId) => {
-    const confirmed = window.confirm("Delete this task?");
-    if (!confirmed) return;
-    try {
-      // Assuming you already have a deleteTask mutation
-      await deleteTaskInProject({ projectId, taskId }).unwrap();
-      toast.success("Task deleted!");
-    } catch (err) {
-      toast.error(err?.data?.message || "Failed to delete task");
-    }
-  };
-
+function ProjectDetailsPage({
+  isLoading,
+  error,
+  project,
+  tasks,
+  isTaskLoading,
+  taskError,
+  currentUserId,
+  editMode,
+  setEditMode,
+  name,
+  setName,
+  description,
+  setDescription,
+  isUpdating,
+  handleUpdate,
+  isDeleting,
+  handleDelete,
+  handleDeleteTask,
+}) {
   if (isLoading) {
     return (
       <Layout>
@@ -157,38 +105,41 @@ function ProjectDetailsPage() {
                   {isDeleting ? "Deleting..." : "Delete"}
                 </button>
                 <Link
-                  to={`/projects/${projectId}/manage-members`}
+                  to={`/projects/${project._id}/manage-members`}
                   className="text-blue-600 hover:underline"
                 >
                   Manage Members
                 </Link>
               </div>
-              {/* Assigned To Section */}
+
+              {/* Members */}
               {project.members?.length > 0 && (
-  <div className="mt-4">
-    <span className="inline-block text-xs font-semibold text-gray-600 mb-1">Assigned To:</span>
-    <div className="flex flex-wrap gap-2 mt-1">
-      {project.members.map((member) => (
-        <span
-          key={member._id}
-          className="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-medium"
-        >
-          {member._id === currentUserId ? "You" : (member.name || member.email)}
-        </span>
-      ))}
-    </div>
-  </div>
-)}
+                <div className="mt-4">
+                  <span className="inline-block text-xs font-semibold text-gray-600 mb-1">
+                    Assigned To:
+                  </span>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {project.members.map((member) => (
+                      <span
+                        key={member._id}
+                        className="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-medium"
+                      >
+                        {member._id === currentUserId ? "You" : member.name || member.email}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Task List */}
+        {/* Tasks */}
         <div className="bg-white shadow-md rounded-lg p-6 border">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-semibold text-gray-800">Tasks</h2>
             <Link
-              to={`/projects/${projectId}/create-task`}
+              to={`/projects/${project._id}/create-task`}
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow"
             >
               + Create Task
@@ -205,9 +156,9 @@ function ProjectDetailsPage() {
             <p className="text-red-500 mb-4">Failed to load tasks</p>
           )}
 
-          {taskData?.tasks?.length > 0 ? (
+          {tasks.length > 0 ? (
             <ul className="grid md:grid-cols-2 gap-4">
-              {taskData.tasks.map((task) => (
+              {tasks.map((task) => (
                 <li
                   key={task._id}
                   className="p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition"
@@ -219,28 +170,25 @@ function ProjectDetailsPage() {
                     {task.description}
                   </p>
                   <p className="text-sm mt-1">
-  Assigned to:{" "}
-  {task.assignedTo ? (
-    <span className="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-medium">
-      {task.assignedTo._id === currentUserId ? (
-        <>
-          You <br />
-        </>
-      ) : (
-        <>
-          Name: {task.assignedTo.name || "Unnamed"} <br />
-          Email: {task.assignedTo.email}
-        </>
-      )}
-    </span>
-  ) : (
-    <span className="text-gray-500 italic">Not Assigned</span>
-  )}
-</p>
-
+                    Assigned to:{" "}
+                    {task.assignedTo ? (
+                      <span className="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                        {task.assignedTo._id === currentUserId ? (
+                          <>You</>
+                        ) : (
+                          <>
+                            Name: {task.assignedTo.name || "Unnamed"} <br />
+                            Email: {task.assignedTo.email}
+                          </>
+                        )}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 italic">Not Assigned</span>
+                    )}
+                  </p>
                   <div className="flex gap-2 mt-3">
                     <Link
-                      to={`/projects/${projectId}/edit-task/${task._id}`}
+                      to={`/projects/${project._id}/edit-task/${task._id}`}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
                     >
                       Edit

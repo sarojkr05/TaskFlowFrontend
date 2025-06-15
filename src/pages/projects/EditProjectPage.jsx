@@ -1,36 +1,15 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useGetProjectByIdQuery, useUpdateProjectMutation } from '../../features/projects/projectApi';
-import Layout from '../../layout/Layout';
+import Layout from "../../layout/Layout";
 
-function EditProjectPage() {
-  const { projectId } = useParams();
-  const navigate = useNavigate();
-  const { data, isLoading, error } = useGetProjectByIdQuery(projectId);
-  const [updateProject, { isLoading: isUpdating }] = useUpdateProjectMutation();
-
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-
-  useEffect(() => {
-    if (data?.project) {
-      setName(data.project.name);
-      setDescription(data.project.description);
-    }
-  }, [data]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!name.trim() || !description.trim()) return;
-
-    try {
-      await updateProject({ projectId, updatedData: { name, description } }).unwrap();
-      navigate('/projects');
-    } catch (err) {
-      console.error('Update failed:', err);
-    }
-  };
-
+function EditProjectPage({
+  name,
+  setName,
+  description,
+  setDescription,
+  handleSubmit,
+  isLoading,
+  isUpdating,
+  error,
+}) {
   return (
     <Layout>
       <div className="container mx-auto p-4 max-w-lg">
@@ -67,7 +46,7 @@ function EditProjectPage() {
               disabled={isUpdating}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
-              {isUpdating ? 'Updating...' : 'Update Project'}
+              {isUpdating ? "Updating..." : "Update Project"}
             </button>
           </form>
         )}

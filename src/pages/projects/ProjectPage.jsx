@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import Layout from "../../layout/Layout";
 import {
   useGetAllProjectsQuery,
-  useGetProjectMembersQuery,
 } from "../../features/projects/projectApi";
 import { Loader2, FolderPlus, FolderOpen } from "lucide-react";
 import { useSelector } from "react-redux";

@@ -1,40 +1,6 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import {
-  useGetTasksByProjectIdQuery,
-  useUpdateTaskInProjectMutation,
-} from "../../features/projects/projectApi";
 import Layout from "../../layout/Layout";
-import { toast } from "sonner";
 
-function EditProjectTaskPage() {
-  const { projectId, taskId } = useParams();
-  const navigate = useNavigate();
-  const { data, isLoading, error } = useGetTasksByProjectIdQuery(projectId);
-  const [updateTask, { isLoading: isUpdating }] = useUpdateTaskInProjectMutation();
-
-  const [task, setTask] = useState({ title: "", description: "" });
-
-  useEffect(() => {
-    if (data?.tasks?.length) {
-      const found = data.tasks.find((t) => t._id === taskId);
-      if (found) {
-        setTask({ title: found.title, description: found.description });
-      }
-    }
-  }, [data, taskId]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await updateTask({ projectId, taskId, updatedData: task }).unwrap();
-      toast.success("Task updated!");
-      navigate(`/projects/${projectId}`);
-    } catch (err) {
-      toast.error(err?.data?.message || "Update failed");
-    }
-  };
-
+function EditProjectTaskPage({ task, setTask, handleSubmit, isLoading, isUpdating, error }) {
   if (isLoading) return <Layout><p className="p-4">Loading task...</p></Layout>;
   if (error) return <Layout><p className="p-4 text-red-500">Task not found</p></Layout>;
 
