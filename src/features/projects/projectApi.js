@@ -76,10 +76,10 @@ export const projectApi = createApi({
       tagTypes: ["Project", "Task"],
     }),
     createTaskInProject: builder.mutation({
-      query: ({ projectId, title, description }) => ({
+      query: ({ projectId, title, assignedTo, description }) => ({
         url: `/projects/${projectId}/tasks`,
         method: "POST",
-        body: { title, description },
+        body: { title, description, assignedTo },
       }),
       invalidatesTags: ["Task"],
       providesTags: (result, error, projectId) => [

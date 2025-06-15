@@ -10,8 +10,10 @@ import {
   useUpdateProjectMutation,
   useGetTasksByProjectIdQuery,
   useDeleteTaskInProjectMutation,
+  useGetProjectMembersQuery,
 } from "../../features/projects/projectApi";
 import { Loader2, Pencil, Trash2 } from "lucide-react";
+import { useSelector } from "react-redux";
 
 function ProjectDetailsPage() {
   const { projectId } = useParams();
@@ -30,6 +32,9 @@ function ProjectDetailsPage() {
   const [name, setName] = useState(project?.name || "");
   const [description, setDescription] = useState(project?.description || "");
   const [deleteTaskInProject] = useDeleteTaskInProjectMutation();
+  const { data: memberData, isLoading: loadingMembers } =
+    useGetProjectMembersQuery(projectId);
+  const currentUserId = useSelector((state) => state.auth.user?._id);
 
   const handleUpdate = async () => {
     try {
@@ -158,6 +163,22 @@ function ProjectDetailsPage() {
                   Manage Members
                 </Link>
               </div>
+              {/* Assigned To Section */}
+              {project.members?.length > 0 && (
+  <div className="mt-4">
+    <span className="inline-block text-xs font-semibold text-gray-600 mb-1">Assigned To:</span>
+    <div className="flex flex-wrap gap-2 mt-1">
+      {project.members.map((member) => (
+        <span
+          key={member._id}
+          className="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-medium"
+        >
+          {member._id === currentUserId ? "You" : (member.name || member.email)}
+        </span>
+      ))}
+    </div>
+  </div>
+)}
             </div>
           )}
         </div>
@@ -197,11 +218,26 @@ function ProjectDetailsPage() {
                   <p className="text-sm text-gray-600 mt-1">
                     {task.description}
                   </p>
-                  {task.assignedTo && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      Assigned to: {task.assignedTo?.email || "User"}
-                    </p>
-                  )}
+                  <p className="text-sm mt-1">
+  Assigned to:{" "}
+  {task.assignedTo ? (
+    <span className="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-medium">
+      {task.assignedTo._id === currentUserId ? (
+        <>
+          You <br />
+        </>
+      ) : (
+        <>
+          Name: {task.assignedTo.name || "Unnamed"} <br />
+          Email: {task.assignedTo.email}
+        </>
+      )}
+    </span>
+  ) : (
+    <span className="text-gray-500 italic">Not Assigned</span>
+  )}
+</p>
+
                   <div className="flex gap-2 mt-3">
                     <Link
                       to={`/projects/${projectId}/edit-task/${task._id}`}

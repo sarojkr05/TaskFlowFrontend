@@ -50,8 +50,8 @@ function Layout({ children }) {
       </nav>
 
       {/* Add top padding to offset the fixed navbar height (e.g., 80px for safety) */}
-      <div className="pt-24">
-        {children}
+      <div className="pt-20 min-h-screen flex flex-col">
+        <main className="flex-grow">{children}</main>
       </div>
 
       <Footer />

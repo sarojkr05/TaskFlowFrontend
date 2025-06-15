@@ -1,14 +1,19 @@
 // src/pages/ProjectsPage.jsx
 
-import { Link } from 'react-router-dom';
-import Layout from '../../layout/Layout';
-import { useGetAllProjectsQuery } from '../../features/projects/projectApi';
-import { Loader2, FolderPlus, FolderOpen } from 'lucide-react';
+import { Link } from "react-router-dom";
+import Layout from "../../layout/Layout";
+import {
+  useGetAllProjectsQuery,
+  useGetProjectMembersQuery,
+} from "../../features/projects/projectApi";
+import { Loader2, FolderPlus, FolderOpen } from "lucide-react";
+import { useSelector } from "react-redux";
 
 function ProjectsPage() {
   const { data, isLoading, error } = useGetAllProjectsQuery();
-  const projects = data?.projects || [];
 
+  const projects = data?.projects || [];
+  const currentUserId = useSelector((state) => state.auth.user?._id);
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
@@ -40,30 +45,47 @@ function ProjectsPage() {
 
         {/* Project Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.length > 0 ? (
-            projects.map((project) => (
-              <Link
-                to={`/projects/${project._id}`}
-                key={project._id}
-                className="group border p-5 rounded-lg shadow-sm hover:shadow-md bg-white transition transform hover:-translate-y-1"
-              >
-                <h2 className="text-xl font-semibold text-gray-800 group-hover:text-blue-600 transition">
-                  {project.name}
-                </h2>
-                <p className="mt-2 text-sm text-gray-600 line-clamp-3">
-                  {project.description}
-                </p>
-              </Link>
-            ))
-          ) : (
-            !isLoading && (
-              <div className="col-span-full text-center text-gray-500 mt-8">
-                <FolderOpen className="mx-auto w-12 h-12 mb-2 text-gray-400" />
-                <p className="text-lg">No projects found.</p>
-                <p className="text-sm">Start by creating your first project.</p>
-              </div>
-            )
-          )}
+          {projects.length > 0
+            ? projects.map((project) => (
+                <Link
+                  to={`/projects/${project._id}`}
+                  key={project._id}
+                  className="group border p-5 rounded-lg shadow-sm hover:shadow-md bg-white transition transform hover:-translate-y-1"
+                >
+                  <h2 className="text-xl font-semibold text-gray-800 group-hover:text-blue-600 transition">
+                    {project.name}
+                  </h2>
+                  <p className="mt-2 text-sm text-gray-600 line-clamp-3">
+                    {project.description}
+                  </p>
+                  {project.members?.length > 0 && (
+                    <div className="mt-4">
+                      <span className="inline-block text-xs font-semibold text-gray-600 mb-1">
+                        Assigned To:
+                      </span>
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        {project.members.map((member) => (
+                          <span
+                            key={member._id}
+                            className="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-medium"
+                          >
+                            {member._id === currentUserId ? "You" : (member.name || member.email)}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </Link>
+              ))
+            : !isLoading && (
+                <div className="col-span-full text-center text-gray-500 mt-8">
+                  <FolderOpen className="mx-auto w-12 h-12 mb-2 text-gray-400" />
+                  <p className="text-lg">No projects found.</p>
+                  <p className="text-sm">
+                    Start by creating your first project.
+                  </p>
+                </div>
+              )}
         </div>
       </div>
     </Layout>
