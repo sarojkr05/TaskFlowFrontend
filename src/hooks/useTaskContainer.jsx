@@ -16,7 +16,6 @@ const useTaskContainer = () => {
   const navigate = useNavigate();
 
   const { selectedTask, filterStatus } = useSelector((state) => state.task);
-
   const { data, isLoading, isError, error } = useGetAllTasksQuery();
   const [deleteTask] = useDeleteTaskMutation();
 
@@ -27,32 +26,17 @@ const useTaskContainer = () => {
       ? tasks
       : tasks.filter((task) => task.status === filterStatus);
 
-  const handleEdit = (taskId) => {
-    navigate(`/edit/${taskId}`);
-  };
-
   const handleDelete = async (taskId) => {
-  if (window.confirm("Are you sure you want to delete this task?")) {
-    try {
-      await deleteTask(taskId).unwrap();
-      toast.success("Task deleted successfully");
-      dispatch(clearSelectedTask());
-    } catch (error) {
-      toast.error(error?.data?.message || "Failed to delete task");
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      try {
+        await deleteTask(taskId).unwrap();
+        toast.success("Task deleted successfully");
+        dispatch(clearSelectedTask());
+      } catch (err) {
+        toast.error(err?.data?.message || "Failed to delete task");
+      }
     }
-  }
-};
-
-  const handleCreate = () => {
-    navigate("/create-task");
   };
-
-  const handleClose = () => {
-  console.log("Closing detail section...");
-  dispatch(clearSelectedTask())
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
-
 
   return {
     selectedTask,
@@ -61,14 +45,14 @@ const useTaskContainer = () => {
     isLoading,
     isError,
     error,
-    dispatch,
-    handleEdit,
     handleDelete,
-    handleCreate,
-    setFilterStatus,
-    setSelectedTask,
-    clearSelectedTask,
-    handleClose
+    handleCreate: () => navigate("/create-task"),
+    handleFilterChange: (status) => dispatch(setFilterStatus(status)),
+    handleSelectTask: (task) => dispatch(setSelectedTask(task)),
+    handleClose: () => {
+      dispatch(clearSelectedTask());
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
   };
 };
 

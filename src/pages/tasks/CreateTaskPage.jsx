@@ -1,8 +1,8 @@
-import { useCreateTaskMutation } from '../features/tasks/taskApi'
+import { useCreateTaskMutation } from '../../features/tasks/taskApi'
 import { toast } from 'sonner';
 import TaskForm from './TaskForm';
 import { useNavigate } from 'react-router-dom';
-import Layout from '../layout/Layout';
+import Layout from '../../layout/Layout';
 
 function CreateTaskPage() {
 

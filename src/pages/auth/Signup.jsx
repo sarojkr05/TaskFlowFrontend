@@ -1,6 +1,7 @@
-import Layout from "../layout/Layout";
+import Layout from "../../layout/Layout";
 import Lottie from "lottie-react";
-import registerImg from "../assets/signup.json";
+import registerImg from "../../assets/signup.json";
+import { Link } from "react-router-dom";
 
 function Signup({ formData, onChange, onSubmit, isLoading }) {
   return (
@@ -54,6 +55,7 @@ function Signup({ formData, onChange, onSubmit, isLoading }) {
               {isLoading? "Singning Up..." : "Sign UP"}
             </button>
           </form>
+          <p>Already have an account? <Link to='/login'><span className="text-blue-700 font-semibold hover:text-blue-600 cursor-pointer">Login</span></Link></p>
         </div>
 
         {/* Illustration on the right side (only on large screens) */}

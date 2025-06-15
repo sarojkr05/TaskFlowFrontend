@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
 import Signup from "./Signup";
-import { useRegisterMutation } from "../features/auth/authApi";
-import { setCredentials } from "../features/auth/authSlice";
+import { useRegisterMutation } from "../../features/auth/authApi";
+import { setCredentials } from "../../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const SignupContainer = () => {
   const dispatch = useDispatch();
