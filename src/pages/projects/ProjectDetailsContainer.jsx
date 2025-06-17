@@ -8,6 +8,7 @@ import {
   useGetTasksByProjectIdQuery,
   useDeleteTaskInProjectMutation,
   useGetProjectMembersQuery,
+  useUpdateTaskStatusInProjectMutation,
 } from "../../features/projects/projectApi";
 import { useSelector } from "react-redux";
 import ProjectDetailsPage from "../../pages/projects/projectDetailsPage";
@@ -33,6 +34,24 @@ function ProjectDetailsContainer() {
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState(project?.name || "");
   const [description, setDescription] = useState(project?.description || "");
+
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [updateTaskStatus] = useUpdateTaskStatusInProjectMutation();
+
+  const handleMarkCompleted = async (taskId) => {
+  try {
+    await updateTaskStatus({ taskId, projectId, status: "completed" }).unwrap();
+    toast.success("Task marked as completed");
+  } catch (error) {
+    toast.error("Failed to update task");
+  }
+};
+
+  const filteredTasks =
+  filterStatus === "all"
+    ? tasks
+    : tasks.filter((task) => task.status === filterStatus);
+
 
   const handleUpdate = async () => {
     try {
@@ -87,6 +106,10 @@ function ProjectDetailsContainer() {
       isDeleting={isDeleting}
       handleDelete={handleDelete}
       handleDeleteTask={handleDeleteTask}
+      handleMarkCompleted={handleMarkCompleted}
+      filterStatus={filterStatus}
+      setFilterStatus={setFilterStatus}
+      filteredTasks={filteredTasks}
     />
   );
 }

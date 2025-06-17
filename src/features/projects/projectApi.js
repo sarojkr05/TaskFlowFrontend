@@ -1,11 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithLogout } from "../baseQueryWithLogout";
 
 export const projectApi = createApi({
   reducerPath: "projectApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3300",
-    credentials: "include", // Include cookies for authentication
-  }),
+  baseQuery: baseQueryWithLogout,
   tagTypes: ["Project"],
   endpoints: (builder) => ({
     // ✅ Get all projects
@@ -76,10 +74,17 @@ export const projectApi = createApi({
       tagTypes: ["Project", "Task"],
     }),
     createTaskInProject: builder.mutation({
-      query: ({ projectId, title, assignedTo, description }) => ({
+      query: ({
+        projectId,
+        title,
+        description,
+        assignedTo,
+        status,
+        priority,
+      }) => ({
         url: `/projects/${projectId}/tasks`,
         method: "POST",
-        body: { title, description, assignedTo },
+        body: { title, description, assignedTo, status, priority }, // ✅ Fixed
       }),
       invalidatesTags: ["Task"],
       providesTags: (result, error, projectId) => [
@@ -101,17 +106,12 @@ export const projectApi = createApi({
       tagTypes: ["Project", "Task"],
     }),
     updateTaskStatusInProject: builder.mutation({
-      query: ({ taskId, updatedData }) => ({
-        url: `/projects/tasks/${taskId}`,
+      query: ({ taskId, status, projectId }) => ({
+        url: `/projects/${projectId}/tasks/${taskId}`,
         method: "PUT",
-        body: { status: updatedData.status },
+        body: { status },
       }),
       invalidatesTags: ["Task"],
-      providesTags: (result, error, projectId) => [
-        { type: "Project", id: projectId },
-        "Task",
-      ],
-      tagTypes: ["Project", "Task"],
     }),
     getProjectMembers: builder.query({
       query: (projectId) => `/projects/${projectId}/members`,
@@ -156,5 +156,5 @@ export const {
   useUpdateTaskStatusInProjectMutation,
   useGetProjectMembersQuery,
   useAddProjectMemberMutation,
-  useRemoveProjectMemberMutation
+  useRemoveProjectMemberMutation,
 } = projectApi;

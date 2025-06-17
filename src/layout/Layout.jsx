@@ -2,7 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/authSlice";
-import TaskFlowLogo from "../assets/TaskFlowLogo.jpg";
+import animatedLogo from "../assets/taskNav.json";
+import Lottie from "lottie-react";
 function Layout({ children }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -16,16 +17,29 @@ function Layout({ children }) {
   return (
     <>
       <nav className="fixed top-0 w-full z-50 bg-white shadow-md px-6 py-4 flex items-center justify-around">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
           <h1 className="text-xl font-bold text-blue-600">TaskFlow</h1>
-          <img src={TaskFlowLogo} alt="TaskFlow Logo" width={50} height={50} />
+          <Lottie
+            animationData={animatedLogo}
+            loop={true}
+            alt="TaskFlow Logo"
+            style={{ width: "30px", height: "30px" }} // Customize size here
+          />{" "}
         </div>
 
         <ul className="hidden md:flex gap-6 text-gray-700 font-medium">
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/projects">Projects</Link></li>
-          <li><Link to="/tasks">Tasks</Link></li>
-          <li><Link to="/profile">Profile</Link></li>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/projects">Projects</Link>
+          </li>
+          <li>
+            <Link to="/tasks">Tasks</Link>
+          </li>
+          <li>
+            <Link to="/profile">Profile</Link>
+          </li>
         </ul>
 
         {user ? (

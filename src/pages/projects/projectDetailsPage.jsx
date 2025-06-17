@@ -2,6 +2,7 @@
 import Layout from "../../layout/Layout";
 import { Link } from "react-router-dom";
 import { Loader2, Pencil, Trash2 } from "lucide-react";
+import TaskFilter from "../../components/TaskFilter";
 
 function ProjectDetailsPage({
   isLoading,
@@ -22,6 +23,10 @@ function ProjectDetailsPage({
   isDeleting,
   handleDelete,
   handleDeleteTask,
+  filterStatus,
+  setFilterStatus,
+  filteredTasks,
+  handleMarkCompleted,
 }) {
   if (isLoading) {
     return (
@@ -124,7 +129,9 @@ function ProjectDetailsPage({
                         key={member._id}
                         className="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-medium"
                       >
-                        {member._id === currentUserId ? "You" : member.name || member.email}
+                        {member._id === currentUserId
+                          ? "You"
+                          : member.name || member.email}
                       </span>
                     ))}
                   </div>
@@ -133,6 +140,8 @@ function ProjectDetailsPage({
             </div>
           )}
         </div>
+
+        <TaskFilter currentStatus={filterStatus} onChange={setFilterStatus} />
 
         {/* Tasks */}
         <div className="bg-white shadow-md rounded-lg p-6 border">
@@ -156,9 +165,9 @@ function ProjectDetailsPage({
             <p className="text-red-500 mb-4">Failed to load tasks</p>
           )}
 
-          {tasks.length > 0 ? (
+          {filteredTasks.length > 0 ? (
             <ul className="grid md:grid-cols-2 gap-4">
-              {tasks.map((task) => (
+              {filteredTasks.map((task) => (
                 <li
                   key={task._id}
                   className="p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition"
@@ -169,23 +178,45 @@ function ProjectDetailsPage({
                   <p className="text-sm text-gray-600 mt-1">
                     {task.description}
                   </p>
-                  <p className="text-sm mt-1">
+
+                  <div className="flex gap-2 mt-2 text-sm">
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-white text-xs font-medium ${
+                        task.status === "pending"
+                          ? "bg-yellow-500"
+                          : task.status === "in-progress"
+                          ? "bg-blue-500"
+                          : "bg-green-600"
+                      }`}
+                    >
+                      {task.status}
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-white text-xs font-medium ${
+                        task.priority === "low"
+                          ? "bg-gray-500"
+                          : task.priority === "medium"
+                          ? "bg-purple-500"
+                          : "bg-red-600"
+                      }`}
+                    >
+                      {task.priority}
+                    </span>
+                  </div>
+
+                  <p className="text-sm mt-2">
                     Assigned to:{" "}
                     {task.assignedTo ? (
                       <span className="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-medium">
-                        {task.assignedTo._id === currentUserId ? (
-                          <>You</>
-                        ) : (
-                          <>
-                            Name: {task.assignedTo.name || "Unnamed"} <br />
-                            Email: {task.assignedTo.email}
-                          </>
-                        )}
+                        {task.assignedTo._id === currentUserId
+                          ? "You"
+                          : task.assignedTo.email}
                       </span>
                     ) : (
                       <span className="text-gray-500 italic">Not Assigned</span>
                     )}
                   </p>
+
                   <div className="flex gap-2 mt-3">
                     <Link
                       to={`/projects/${project._id}/edit-task/${task._id}`}
@@ -199,16 +230,23 @@ function ProjectDetailsPage({
                     >
                       Delete
                     </button>
+
+                    {task.status !== "completed" && (
+                      <button
+                        onClick={() => handleMarkCompleted(task._id)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+                      >
+                        Mark as Completed
+                      </button>
+                    )}
                   </div>
                 </li>
               ))}
             </ul>
           ) : (
-            !isTaskLoading && (
-              <p className="text-gray-500 italic">
-                No tasks found for this project.
-              </p>
-            )
+            <p className="text-gray-500 italic">
+              No tasks found for this filter.
+            </p>
           )}
         </div>
       </div>

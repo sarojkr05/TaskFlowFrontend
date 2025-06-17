@@ -7,18 +7,26 @@ import {
 } from "../../features/projects/projectApi";
 import CreateProjectTaskPage from "../../pages/projects/CreateProjectTaskPage";
 
-function CreateProjectTaskContainer() {
+function CreateProjectTaskContainer({ initialData = {} }) {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const [createTask, { isLoading }] = useCreateTaskInProjectMutation();
   const { data: memberData, isLoading: isMemberLoading } =
-    useGetProjectMembersQuery(projectId);
+  useGetProjectMembersQuery(projectId);
 
   const [task, setTask] = useState({
     title: "",
     description: "",
     assignedTo: "",
+    status: "pending",
+    priority: "medium",
   });
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  }
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

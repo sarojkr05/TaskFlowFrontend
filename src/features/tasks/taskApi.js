@@ -1,12 +1,10 @@
 // features/task/taskApi.js
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithLogout } from "../baseQueryWithLogout";
 
 export const taskApi = createApi({
   reducerPath: "taskApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3300",
-    credentials: "include", // for cookies/auth headers
-  }),
+  baseQuery: baseQueryWithLogout,
   tagTypes: ["Task"], // enables caching/refetching
   endpoints: (builder) => ({
     getAllTasks: builder.query({

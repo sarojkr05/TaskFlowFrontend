@@ -1,6 +1,6 @@
 import Layout from "../../layout/Layout";
 
-function EditProjectTaskPage({ task, setTask, handleSubmit, isLoading, isUpdating, error }) {
+function EditProjectTaskPage({ task, setTask, handleSubmit, isLoading, isUpdating, error, isMemberLoading, members }) {
   if (isLoading) return <Layout><p className="p-4">Loading task...</p></Layout>;
   if (error) return <Layout><p className="p-4 text-red-500">Task not found</p></Layout>;
 
@@ -20,6 +20,27 @@ function EditProjectTaskPage({ task, setTask, handleSubmit, isLoading, isUpdatin
             value={task.description}
             onChange={(e) => setTask({ ...task, description: e.target.value })}
           />
+          <select
+              className="w-full border p-3 rounded"
+              value={task.assignedTo || ""}
+              onChange={(e) =>
+                setTask({ ...task, assignedTo: e.target.value || null })
+              }
+              disabled={isMemberLoading}
+            >
+              <option value="">Unassigned</option>
+              {isMemberLoading ? (
+                <option disabled>Loading members...</option>
+              ) : members.length === 0 ? (
+                <option disabled>No members found</option>
+              ) : (
+                members.map((user) => (
+                  <option key={user._id} value={user._id}>
+                    {user.email}
+                  </option>
+                ))
+              )}
+            </select>
           <button
             type="submit"
             className="bg-green-600 text-white px-4 py-2 rounded"

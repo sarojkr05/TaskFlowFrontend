@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
+  useGetProjectMembersQuery,
   useGetTasksByProjectIdQuery,
   useUpdateTaskInProjectMutation,
 } from "../../features/projects/projectApi";
@@ -12,6 +13,7 @@ function EditProjectTaskContainer() {
   const navigate = useNavigate();
   const { data, isLoading, error } = useGetTasksByProjectIdQuery(projectId);
   const [updateTask, { isLoading: isUpdating }] = useUpdateTaskInProjectMutation();
+  const { data: memberData, isLoading: isMemberLoading } = useGetProjectMembersQuery(projectId);
 
   const [task, setTask] = useState({ title: "", description: "" });
 
@@ -43,6 +45,8 @@ function EditProjectTaskContainer() {
       isLoading={isLoading}
       isUpdating={isUpdating}
       error={error}
+      isMemberLoading={isMemberLoading}
+      members={memberData?.members || []}
     />
   );
 }

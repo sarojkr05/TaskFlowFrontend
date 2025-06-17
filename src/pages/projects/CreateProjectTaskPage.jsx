@@ -34,6 +34,36 @@ function CreateProjectTaskPage({
               }
               required
             />
+            {/* Status */}
+            <div>
+              <label className="block mb-1 font-medium text-gray-700">
+                Status
+              </label>
+              <select
+                name="status"
+                value={task.status}
+                onChange={(e) => setTask({ ...task, status: e.target.value })}
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+              >
+                <option value="pending">Pending</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+
+            {/* Priority */}
+            <div>
+              <select
+                name="priority"
+                value={task.priority}
+                onChange={(e) => setTask({ ...task, priority: e.target.value })}
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
             <select
               className="w-full border p-3 rounded"
               value={task.assignedTo || ""}
