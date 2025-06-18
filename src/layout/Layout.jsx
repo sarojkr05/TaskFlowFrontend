@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/authSlice";
 import animatedLogo from "../assets/taskNav.json";
 import Lottie from "lottie-react";
+import NotificationBell from "../components/NotificationBell";
 function Layout({ children }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -61,6 +62,9 @@ function Layout({ children }) {
             </span>
           </Link>
         )}
+        <div className="relative end-25 cursor-pointer">
+        <NotificationBell />
+        </div>
       </nav>
 
       {/* Add top padding to offset the fixed navbar height (e.g., 80px for safety) */}

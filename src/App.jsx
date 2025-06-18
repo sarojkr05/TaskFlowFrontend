@@ -15,8 +15,30 @@ import CreateProjectContainer from './pages/projects/CreateProjectContainer'
 import EditProjectContainer from './pages/projects/EditProjectContainer'
 import EditProjectTaskContainer from './pages/projects/EditProjectTaskContainer'
 import ManageProjectMembersContainer from './pages/projects/ManageProjectMembersContainer'
+import socket from './helpers/socket'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { toast } from 'sonner'
+import { fetchNotifications } from './features/notifications/notificationSlice'
+import AllNotifications from './pages/AllNotifications'
 
 function App() {
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if(user?._id) {
+      socket.emit("register", user._id);
+      dispatch(fetchNotifications());
+    }
+    socket.on("projectAdded", ({ message }) => {
+      // dispatch(addNotification({ message, timestamp: new Date().toISOString() }));
+      toast.info(message);
+    });
+    return () => {
+      socket.off("projectAdded");
+    };
+  }, [user, dispatch]);
 
   return (
     <>
@@ -36,6 +58,8 @@ function App() {
         <Route path='/projects/:projectId/create-task' element={<CreateProjectTaskContainer />} />
         <Route path='/projects/:projectId/edit-task/:taskId' element={<EditProjectTaskContainer />} />
         <Route path="/projects/:projectId/manage-members" element={<ManageProjectMembersContainer />} />
+        <Route path="/notifications" element={<AllNotifications />} />
+
 
         {/* Error Routes */}
 

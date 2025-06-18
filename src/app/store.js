@@ -5,6 +5,7 @@ import { taskApi } from "../features/tasks/taskApi";
 import taskReducer from "../features/tasks/taskSlice"
 import { projectApi } from "../features/projects/projectApi";
 import projectReducer from "../features/projects/projectSlice";
+import notificationReducer from "../features/notifications/notificationSlice";
 
 export const store = configureStore({
     reducer: {
@@ -13,7 +14,8 @@ export const store = configureStore({
         [taskApi.reducerPath]: taskApi.reducer,
         task: taskReducer,
         [projectApi.reducerPath]: projectApi.reducer,
-        project: projectReducer
+        project: projectReducer,
+        notifications: notificationReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()
