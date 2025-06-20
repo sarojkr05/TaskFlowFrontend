@@ -32,13 +32,14 @@ function App() {
       dispatch(fetchNotifications());
     }
     socket.on("projectAdded", ({ message }) => {
-      // dispatch(addNotification({ message, timestamp: new Date().toISOString() }));
+      console.log("Real-time notification received:", message);
       toast.info(message);
     });
     return () => {
       socket.off("projectAdded");
     };
   }, [user, dispatch]);
+
 
   return (
     <>

@@ -13,10 +13,6 @@ export default function NotificationBell() {
 
   const unreadCount = notifications.filter((note) => !note.isRead).length;
 
-  useEffect(() => {
-    console.log("Notifications in Redux:", notifications);
-  }, [notifications]);
-
   const handleToggle = () => {
     setOpen(!open);
     if (!open && unreadCount > 0) {

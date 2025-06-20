@@ -1,5 +1,3 @@
-// src/pages/AllNotifications.jsx
-
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { fetchNotifications } from "../features/notifications/notificationSlice";

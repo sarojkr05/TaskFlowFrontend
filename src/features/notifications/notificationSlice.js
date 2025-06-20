@@ -11,7 +11,6 @@ export const fetchNotifications = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.get("/notifications"); // 👈 FIXED
-      console.log("📨 Notifications fetched:", data.notifications);
       return data.notifications; // ✅ Correct extraction
     } catch (error) {
       return rejectWithValue(
@@ -49,7 +48,6 @@ const notificationSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchNotifications.fulfilled, (state, action) => {
-        console.log("✅ Notifications stored in Redux:", action.payload);
         state.loading = false;
         state.items = action.payload;
       })
