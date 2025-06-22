@@ -37,16 +37,25 @@ function Layout({ children }) {
 
         {/* Hamburger button */}
         <div className="md:hidden">
-          <button onClick={() => setMenuOpen(!menuOpen)} className="focus:outline-none">
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="focus:outline-none"
+          >
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex gap-6 text-gray-700 font-medium">
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/projects">Projects</Link></li>
-          <li><Link to="/tasks">Tasks</Link></li>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/projects">Projects</Link>
+          </li>
+          <li>
+            <Link to="/tasks">Tasks</Link>
+          </li>
         </ul>
 
         {/* Auth Button & Notification (Desktop only) */}
@@ -79,10 +88,28 @@ function Layout({ children }) {
       {menuOpen && (
         <div className="md:hidden bg-white shadow-md absolute top-16 left-0 w-full px-6 pb-4 z-40">
           <ul className="flex flex-col gap-4 text-gray-700 font-medium">
-            <li><Link to="/" onClick={() => setMenuOpen(false)}>Home</Link></li>
-            <li><Link to="/projects" onClick={() => setMenuOpen(false)}>Projects</Link></li>
-            <li><Link to="/tasks" onClick={() => setMenuOpen(false)}>Tasks</Link></li>
+            <li>
+              <Link to="/" onClick={() => setMenuOpen(false)}>
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link to="/projects" onClick={() => setMenuOpen(false)}>
+                Projects
+              </Link>
+            </li>
+            <li>
+              <Link to="/tasks" onClick={() => setMenuOpen(false)}>
+                Tasks
+              </Link>
+            </li>
           </ul>
+
+          {/* ✅ Notification Bell on Mobile */}
+          <div className="mt-4 flex justify-start">
+            <NotificationBell />
+          </div>
+
           <div className="mt-4">
             {user ? (
               <button
