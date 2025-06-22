@@ -5,8 +5,9 @@ import { logout } from "./auth/authSlice.js";
 const baseQuery = fetchBaseQuery({
   baseUrl: "https://taskflowbackend-cbxp.onrender.com",
   credentials: "include",
-  prepareHeaders: (headers, { getState }) => {
-    const token = getState().auth.token;
+  prepareHeaders: (headers) => {
+    // const token = getState().auth.token;
+    const token = localStorage.getItem("token");
     console.log("token in headers", token)
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
