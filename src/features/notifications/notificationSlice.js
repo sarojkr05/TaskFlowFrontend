@@ -11,7 +11,7 @@ export const fetchNotifications = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.get("/notifications"); // 👈 FIXED
-      return data.notifications; // ✅ Correct extraction
+      return data.notifications;  
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch notifications"
