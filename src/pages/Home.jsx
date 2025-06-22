@@ -1,8 +1,20 @@
 import Layout from '../layout/Layout';
 import Lottie from 'lottie-react';
 import taskAnimation from '../assets/taskflow.json';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 function Home() {
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+
+  const handleGetStarted = () => {
+    if (user) {
+      navigate("/projects"); // go to dashboard
+    } else {
+      navigate("/login"); // prompt to log in
+    }
+  };
   return (
     <Layout>
       <section className="flex flex-col-reverse lg:flex-row items-center justify-center min-h-[calc(102vh-160px)] px-4 text-center lg:text-left">
@@ -20,6 +32,7 @@ function Home() {
             Streamline your workflow, manage projects efficiently, and stay on top of your team's tasks — all in one place.
           </p>
           <button
+            onClick={handleGetStarted}
             className="mt-8 px-6 py-3 bg-blue-600 text-white text-lg font-medium rounded-full shadow-md hover:bg-blue-700 transition duration-300 cursor-pointer"
           >
             Get Started

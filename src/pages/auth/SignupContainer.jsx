@@ -28,7 +28,6 @@ const SignupContainer = () => {
       const res = await register(formData).unwrap();
       dispatch(setCredentials(res));
       toast.success("Signup successful!");
-        console.log(res)
       // Navigate to dashboard or login
       setTimeout(() => navigate('/login'), 1500)
     } catch (error) {

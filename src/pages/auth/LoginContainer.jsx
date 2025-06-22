@@ -25,10 +25,8 @@ function LoginContainer() {
       e.preventDefault();
       try {
         const res = await login(formData).unwrap();
-        console.log("login res", res)
         dispatch(setCredentials(res));
         toast.success("Login successful!");
-          console.log(res)
         // Navigate to dashboard or login
         setTimeout(() => navigate('/'), 1500)
       } catch (error) {

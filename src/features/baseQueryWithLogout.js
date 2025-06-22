@@ -3,7 +3,7 @@ import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { logout } from "./auth/authSlice.js";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:3300",
+  baseUrl: "http://localhost:3300" || "https://taskflowbackend-cbxp.onrender.com",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.token;

@@ -6,13 +6,13 @@ export const projectApi = createApi({
   baseQuery: baseQueryWithLogout,
   tagTypes: ["Project"],
   endpoints: (builder) => ({
-    // ✅ Get all projects
+    //Get all projects
     getAllProjects: builder.query({
       query: () => "/projects",
       providesTags: ["Project"],
     }),
 
-    // ✅ Get a single project by ID
+    // Get a single project by ID
     getProjectById: builder.query({
       query: (projectId) => `/projects/${projectId}`,
       providesTags: (result, error, projectId) => [
@@ -20,7 +20,7 @@ export const projectApi = createApi({
       ],
     }),
 
-    // ✅ Create a new project
+    // Create a new project
     createProject: builder.mutation({
       query: (data) => ({
         url: "/projects/create-project",
@@ -30,7 +30,7 @@ export const projectApi = createApi({
       invalidatesTags: ["Project"],
     }),
 
-    // ✅ Update a project
+    // Update a project
     updateProject: builder.mutation({
       query: ({ projectId, updatedData }) => ({
         url: `/projects/${projectId}`,
@@ -43,7 +43,7 @@ export const projectApi = createApi({
       ],
     }),
 
-    // ✅ Delete a project
+    // Delete a project
     deleteProject: builder.mutation({
       query: (projectId) => ({
         url: `/projects/${projectId}`,
