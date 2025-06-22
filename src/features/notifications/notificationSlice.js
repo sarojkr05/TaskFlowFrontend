@@ -1,10 +1,10 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../../helpers/axiosInstance";
 
-export const selectNotifications = (state) => state.notifications.items;
-
-
-
+export const selectNotifications = createSelector(
+  (state) => state.notifications.items,
+  (items) => items
+);
 
 export const fetchNotifications = createAsyncThunk(
   "notification/fetchNotifications",

@@ -1,13 +1,13 @@
 import { Bell } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
-import { markAllAsRead } from "../features/notifications/notificationSlice"; // adjust path if needed
+import { markAllAsRead, selectNotifications } from "../features/notifications/notificationSlice"; // adjust path if needed
 import { Link } from "react-router-dom";
 
 export default function NotificationBell() {
-  const notifications = useSelector(
-    (state) => state.notifications?.items || []
-  );
+
+  const notifications = useSelector(selectNotifications) || [];
+
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
 
